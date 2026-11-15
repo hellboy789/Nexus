@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -34,14 +34,26 @@ jobs:
           EOF
       - run: bash tool/bootstrap.sh
         working-directory: nexus
+      - name: Versiones
+        run: |
+          flutter --version
+          java -version
+          grep -rE "distributionUrl|com.android.application|org.jetbrains.kotlin.android" android/gradle/wrapper/gradle-wrapper.properties android/settings.gradle* || true
+        working-directory: nexus
       - run: flutter pub get
         working-directory: nexus
       - run: flutter build apk --release
+        working-directory: nexus
+      - name: Verificar APK
+        run: |
+          ls -lh build/app/outputs/flutter-apk/app-release.apk
+          test -s build/app/outputs/flutter-apk/app-release.apk
         working-directory: nexus
       - uses: actions/upload-artifact@v4
         with:
           name: nexus-android-apk
           path: nexus/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
 
   windows:
     runs-on: windows-latest
@@ -65,3 +77,4 @@ jobs:
         with:
           name: nexus-windows
           path: nexus/nexus-windows.zip
+          if-no-files-found: error
