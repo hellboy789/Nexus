@@ -17,9 +17,22 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+      - name: Forzar compileSdk 36 en todos los módulos
+        run: |
+          mkdir -p ~/.gradle/init.d
+          cat > ~/.gradle/init.d/nexus-sdk.gradle <<'EOF'
+          allprojects {
+              afterEvaluate { p ->
+                  def a = p.extensions.findByName('android')
+                  if (a != null) {
+                      try { a.compileSdk = 36 } catch (Throwable t) {
+                          try { a.compileSdkVersion(36) } catch (Throwable t2) {}
+                      }
+                  }
+              }
+          }
+          EOF
       - run: bash tool/bootstrap.sh
-        working-directory: nexus
-      - run: sed -i 's/compileSdk = .*/compileSdk = 36/; s/compileSdkVersion .*/compileSdkVersion 36/' android/app/build.gradle*
         working-directory: nexus
       - run: flutter pub get
         working-directory: nexus
