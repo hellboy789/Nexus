@@ -1,0 +1,48 @@
+name: Build NEXUS
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m zipfile -e NEXUS_proyecto.zip .
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable }
+      - run: bash tool/bootstrap.sh
+        working-directory: nexus
+      - run: flutter pub get
+        working-directory: nexus
+      - run: flutter build apk --release
+        working-directory: nexus
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexus-android-apk
+          path: nexus/build/app/outputs/flutter-apk/app-release.apk
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python -m zipfile -e NEXUS_proyecto.zip .
+        shell: bash
+      - uses: subosito/flutter-action@v2
+        with: { channel: stable }
+      - run: bash tool/bootstrap.sh
+        shell: bash
+        working-directory: nexus
+      - run: flutter pub get
+        working-directory: nexus
+      - run: flutter build windows --release
+        working-directory: nexus
+      - run: Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath nexus-windows.zip
+        working-directory: nexus
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexus-windows
+          path: nexus/nexus-windows.zip
