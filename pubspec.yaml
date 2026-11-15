@@ -1,0 +1,27 @@
+name: nexus
+description: NEXUS - herramientas útiles con diseño Liquid Glass.
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sqflite: ^2.3.3
+  sqflite_common_ffi: ^2.3.3
+  sqlite3_flutter_libs: ^0.5.24
+  path_provider: ^2.1.4
+  path: ^1.9.0
+  device_info_plus: ^11.1.0
+  http: ^1.2.2
+  file_picker: ^8.1.4
+  image: ^4.2.0
+  pdf: ^3.11.1
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^5.2.3
+  url_launcher: ^6.3.1
+
+flutter:
+  uses-material-design: true
